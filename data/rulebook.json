@@ -1,0 +1,122 @@
+[
+  {
+    "id": "mv_001",
+    "title": "Drop rows with missing values",
+    "category": "missing_values",
+    "content": "Use df.dropna() to remove rows containing any null values. Use df.dropna(subset=['col1','col2']) to only drop rows where specific columns are null. Best when missing data is rare (< 5% of rows) and the dataset is large enough that losing rows won't bias results."
+  },
+  {
+    "id": "mv_002",
+    "title": "Fill missing numeric values with mean or median",
+    "category": "missing_values",
+    "content": "Use df['col'].fillna(df['col'].mean()) for normally distributed data. Use df['col'].fillna(df['col'].median()) when the column has outliers or is skewed. Median is more robust. For grouped fills: df['col'] = df.groupby('group')['col'].transform(lambda x: x.fillna(x.median()))."
+  },
+  {
+    "id": "mv_003",
+    "title": "Fill missing categorical values with mode or a sentinel",
+    "category": "missing_values",
+    "content": "Use df['col'].fillna(df['col'].mode()[0]) to fill with the most frequent value. Alternatively, fill with a sentinel string like 'Unknown' or 'Missing' using df['col'].fillna('Unknown'). This preserves the row while making the missingness explicit."
+  },
+  {
+    "id": "mv_004",
+    "title": "Add a missing indicator column",
+    "category": "missing_values",
+    "content": "Create a binary flag column to track which rows had missing values before imputation: df['col_was_missing'] = df['col'].isna().astype(int). This preserves information about missingness for downstream models that may find the pattern predictive."
+  },
+  {
+    "id": "dup_001",
+    "title": "Detect and remove exact duplicate rows",
+    "category": "duplicates",
+    "content": "Use df.duplicated().sum() to count exact duplicate rows. Use df.drop_duplicates() to remove them, keeping the first occurrence by default. Use keep='last' to keep the most recent. Use keep=False to flag all duplicates. Always check df.shape before and after."
+  },
+  {
+    "id": "dup_002",
+    "title": "Detect duplicates by key column",
+    "category": "duplicates",
+    "content": "Use df.duplicated(subset=['id_column']).sum() to find rows with duplicate primary keys. This catches cases where the same ID appears multiple times with different values in other columns. Use df[df.duplicated(subset=['id_column'], keep=False)] to inspect all duplicate-key rows."
+  },
+  {
+    "id": "dup_003",
+    "title": "Deduplicate while preserving most complete record",
+    "category": "duplicates",
+    "content": "When duplicates have different completeness, sort by null count ascending before deduplicating: df['null_count'] = df.isnull().sum(axis=1); df = df.sort_values('null_count').drop_duplicates(subset=['id_col']).drop(columns='null_count'). This keeps the row with fewest missing values."
+  },
+  {
+    "id": "tc_001",
+    "title": "Convert string columns to numeric",
+    "category": "type_coercion",
+    "content": "Use pd.to_numeric(df['col'], errors='coerce') to convert a column to numeric, turning unparseable values into NaN instead of raising an error. After conversion, check df['col'].isna().sum() to see how many values failed to parse. Common causes: dollar signs, commas, text mixed with numbers."
+  },
+  {
+    "id": "tc_002",
+    "title": "Remove currency symbols and commas before numeric conversion",
+    "category": "type_coercion",
+    "content": "Strip non-numeric characters before converting: df['price'] = df['price'].astype(str).str.replace(r'[$,]', '', regex=True).str.strip(). Then apply pd.to_numeric(df['price'], errors='coerce'). This handles formats like '$1,234.56' or '1.234,56'."
+  },
+  {
+    "id": "tc_003",
+    "title": "Convert boolean-like string columns",
+    "category": "type_coercion",
+    "content": "Map string representations of booleans: df['col'] = df['col'].str.lower().map({'yes': True, 'no': False, 'true': True, 'false': False, '1': True, '0': False}). Check for unmapped values with df['col'].isna() after mapping."
+  },
+  {
+    "id": "dn_001",
+    "title": "Convert columns to datetime",
+    "category": "date_normalization",
+    "content": "Use pd.to_datetime(df['date_col'], errors='coerce') to parse dates. The errors='coerce' parameter turns unparseable dates into NaT (Not a Time). Specify format for speed and accuracy: pd.to_datetime(df['col'], format='%Y-%m-%d', errors='coerce'). Check df['col'].isna().sum() after to find invalid dates."
+  },
+  {
+    "id": "dn_002",
+    "title": "Standardize mixed date formats",
+    "category": "date_normalization",
+    "content": "When a column has mixed formats (e.g., MM/DD/YYYY and YYYY-MM-DD), use pd.to_datetime(df['col'], infer_datetime_format=True, errors='coerce'). For complex cases, try multiple formats: from dateutil.parser import parse; df['col'] = df['col'].apply(lambda x: parse(str(x)) if pd.notna(x) else pd.NaT)."
+  },
+  {
+    "id": "dn_003",
+    "title": "Detect and flag invalid dates",
+    "category": "date_normalization",
+    "content": "After pd.to_datetime conversion, NaT values indicate invalid or unparseable dates. Flag them: df['date_invalid'] = df['date_col'].isna(). Also check for logically invalid dates: future dates (df['date'] > pd.Timestamp.now()), dates before a reasonable minimum (df['date'] < pd.Timestamp('1900-01-01'))."
+  },
+  {
+    "id": "od_001",
+    "title": "Detect outliers using the IQR method",
+    "category": "outlier_detection",
+    "content": "Calculate IQR: Q1 = df['col'].quantile(0.25); Q3 = df['col'].quantile(0.75); IQR = Q3 - Q1. Flag outliers: lower = Q1 - 1.5*IQR; upper = Q3 + 1.5*IQR; outliers = df[(df['col'] < lower) | (df['col'] > upper)]. This method is robust to extreme values."
+  },
+  {
+    "id": "od_002",
+    "title": "Detect outliers using domain-specific bounds",
+    "category": "outlier_detection",
+    "content": "Apply business rules to flag impossible values: negative quantities (df['qty'] < 0), negative prices (df['price'] < 0), ages outside 0-120 (df['age'] < 0 | df['age'] > 120), percentages outside 0-100. Use: df['qty_invalid'] = df['qty'] < 0. These are often data entry errors."
+  },
+  {
+    "id": "sn_001",
+    "title": "Strip whitespace from string columns",
+    "category": "string_normalization",
+    "content": "Leading/trailing whitespace causes silent mismatches in joins and groupbys. Apply: df['col'] = df['col'].str.strip(). For all string columns at once: str_cols = df.select_dtypes(include='object').columns; df[str_cols] = df[str_cols].apply(lambda x: x.str.strip()). Also normalize internal whitespace: df['col'].str.replace(r'\\s+', ' ', regex=True)."
+  },
+  {
+    "id": "sn_002",
+    "title": "Normalize string case",
+    "category": "string_normalization",
+    "content": "Inconsistent casing causes duplicate categories. Standardize with df['col'] = df['col'].str.lower() or df['col'].str.title() for proper names. For categorical columns, check value counts before and after: df['col'].value_counts() to verify consolidation worked."
+  },
+  {
+    "id": "sn_003",
+    "title": "Remove units from numeric string columns",
+    "category": "string_normalization",
+    "content": "Columns like '2.5kg' or '100ml' need unit extraction: df['weight_kg'] = df['weight'].str.extract(r'([\\d.]+)').astype(float). Always create a new column rather than overwriting, and verify the unit is consistent across all rows before dropping the original."
+  },
+  {
+    "id": "ri_001",
+    "title": "Ensure primary key uniqueness",
+    "category": "referential_integrity",
+    "content": "A primary key column must have no duplicates and no nulls. Check: assert df['id_col'].nunique() == len(df), 'Duplicate IDs found'; assert df['id_col'].notna().all(), 'Null IDs found'. If duplicates exist, investigate whether they represent the same entity or data entry errors before deduplicating."
+  },
+  {
+    "id": "ri_002",
+    "title": "Validate foreign key references",
+    "category": "referential_integrity",
+    "content": "Check that foreign key values exist in the referenced table: orphaned = df[~df['customer_id'].isin(customers['customer_id'])]. Orphaned foreign keys indicate referential integrity violations — either the referenced record was deleted or the ID was entered incorrectly. Decide whether to drop, flag, or investigate these rows."
+  }
+]

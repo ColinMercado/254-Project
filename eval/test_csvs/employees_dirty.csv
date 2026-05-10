@@ -1,0 +1,13 @@
+employee_id,name,department,salary,hire_date,phone
+E001,John Doe,Engineering,95000,2020-03-15,555-1234
+E002,Jane Smith,,50,000,2019-07-22,(555) 234-5678
+E003,Bob Johnson,Marketing,72000,2021-01-10,5553456789
+E001,John Doe,Engineering,95000,2020-03-15,555-1234
+E004,Alice Brown,,85000,2018-11-05,555.4567
+E005,Charlie Davis,Sales,60000,2022-05-30,
+E006,Diana Wilson,HR,68,500,2020-09-14,555-6789
+E007,Eve Martinez,Engineering,91000,2021-03-22,555-7890
+E002,Jane Smith,,50,000,2019-07-22,(555) 234-5678
+E008,Frank Lee,,78000,2019-12-01,555-8901
+E009,Grace Kim,Marketing,65000,2023-02-14,
+E010,Henry Brown,Sales,55000,2022-08-19,555-0123

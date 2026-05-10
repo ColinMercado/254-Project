@@ -1,0 +1,13 @@
+student_id,name,major,gpa,grade,enrollment_date
+STU001,Alice Chen,Computer Science,3.8,A,2022-09-01
+STU002,Bob Park,,4.5,95%,2022-09-01
+STU003,Carol Nguyen,Mathematics,3.2,B+,2021-09-01
+STU001,Alice Chen,Computer Science,3.8,A,2022-09-01
+STU004,,Physics,2.9,C,2023-09-01
+STU005,Eve Johnson,Chemistry,5.0,A+,2022-01-15
+STU006,Frank Davis,Biology,3.5,4.0,2021-09-01
+STU007,Grace Lee,Computer Science,-0.5,F,2023-09-01
+STU002,Bob Park,,4.5,95%,2022-09-01
+STU008,Henry Wilson,Mathematics,3.7,A-,2022-09-01
+STU009,Iris Brown,,3.1,B,2021-09-01
+STU010,Jack Martinez,Physics,3.9,A,2023-09-01

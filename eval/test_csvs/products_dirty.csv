@@ -1,0 +1,13 @@
+sku,product_name,category,price,weight,stock
+SKU001,Laptop Pro,,999.99,2.5kg,50
+SKU002,Wireless Mouse,Electronics,-25.00,0.15kg,200
+SKU003,USB-C Hub,Electronics,45.00,0.3kg,150
+SKU001,Laptop Pro,,999.99,2.5kg,50
+SKU004,Mechanical Keyboard,,89.99,1.2kg,-10
+SKU005,Monitor 27in,Electronics,349.99,5.8kg,30
+SKU006,Webcam HD,Electronics,-79.99,0.25kg,75
+SKU007,Desk Lamp,,35.00,1.1kg,100
+SKU008,Laptop Stand,Accessories,55.00,0.8kg,60
+SKU003,USB-C Hub,Electronics,45.00,0.3kg,150
+SKU009,Headphones,,129.99,0.35kg,-5
+SKU010,Charging Pad,Electronics,29.99,0.2kg,120

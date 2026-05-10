@@ -1,0 +1,13 @@
+item_code,item_name,supplier,quantity,unit,reorder_level,last_updated
+INV001,Steel Bolts M8,Acme Corp,500,pieces,100,2024-01-10
+INV002,Copper Wire,,−50,meters,200,2024-01-11
+INV003,Plastic Sheets,Global Supply,300,sheets,50,2024-01-12
+INV001,Steel Bolts M8,Acme Corp,500,pieces,100,2024-01-10
+INV004,Rubber Gaskets,,200,pcs,75,2024-01-13
+INV005,Aluminum Rods,Metal Works,-100,rods,30,2024-01-14
+INV006,Glass Panels,Clear View,150,panels,20,2024-01-15
+INV007,Nylon Rope,,400,m,80,2024-01-16
+INV002,Copper Wire,,−50,meters,200,2024-01-11
+INV008,Titanium Screws,Precision Parts,250,pieces,60,2024-01-17
+INV009,Carbon Fiber,,180,sheets,25,2024-01-18
+INV010,Brass Fittings,Acme Corp,-30,units,40,2024-01-19

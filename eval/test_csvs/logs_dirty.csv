@@ -1,0 +1,13 @@
+log_id,timestamp,severity,service,message,user_id
+LOG001,2024-01-10 08:15:32,INFO,auth-service,User login successful,U001
+LOG002,not-a-timestamp,,api-gateway,Request timeout after 30s,U002
+LOG003,2024-01-10 08:17:45,ERROR,database,Connection pool exhausted,
+LOG001,2024-01-10 08:15:32,INFO,auth-service,User login successful,U001
+LOG004,2024-01-10 08:18:00,CRITICAL,payment-service,Payment processing failed â€" invalid card,U004
+LOG005,2024-01-10 08:19:15,,cache-service,Cache miss for key user_session_123,U005
+LOG006,2024-01-10 08:20:30,WARNING,auth-service,Multiple failed login attempts,U006
+LOG007,20240110 082145,ERROR,api-gateway,Rate limit exceeded,U007
+LOG002,not-a-timestamp,,api-gateway,Request timeout after 30s,U002
+LOG008,2024-01-10 08:22:00,INFO,database,Query executed in 2500ms,
+LOG009,2024-01-10 08:23:15,DEBUG,auth-service,Token validation started,U009
+LOG010,2024-01-10 08:24:30,,payment-service,Webhook received,U010

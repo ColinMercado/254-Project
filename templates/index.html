@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CSV Doctor — AI Data Quality Assistant</title>
+  <link rel="stylesheet" href="/static/css/style.css" />
+</head>
+<body>
+  <!-- ===== HEADER ===== -->
+  <header class="site-header" role="banner">
+    <div class="header-inner">
+      <div class="logo">
+        <span class="logo-icon" aria-hidden="true">🩺</span>
+        <span class="logo-text">CSV Doctor</span>
+      </div>
+      <p class="tagline">AI-powered data quality diagnosis for your CSV files</p>
+    </div>
+  </header>
+
+  <main id="main-content" class="container">
+
+    <!-- ===== ALERT BANNER ===== -->
+    <div id="alert-banner" class="alert hidden" role="alert" aria-live="assertive">
+      <span id="alert-message"></span>
+      <button class="alert-dismiss" id="alert-dismiss-btn" aria-label="Dismiss alert">✕</button>
+    </div>
+
+    <!-- ===== SECTION 1: INPUT ===== -->
+    <section class="card" id="input-section" aria-labelledby="input-heading">
+      <h2 id="input-heading" class="card-title">
+        <span class="step-badge" aria-hidden="true">1</span>
+        Upload Your CSV
+      </h2>
+
+      <!-- Tab switcher -->
+      <div class="tab-bar" role="tablist" aria-label="CSV input method">
+        <button
+          class="tab-btn active"
+          id="tab-upload"
+          role="tab"
+          aria-selected="true"
+          aria-controls="panel-upload"
+          data-tab="upload"
+        >Upload File</button>
+        <button
+          class="tab-btn"
+          id="tab-paste"
+          role="tab"
+          aria-selected="false"
+          aria-controls="panel-paste"
+          data-tab="paste"
+        >Paste CSV</button>
+      </div>
+
+      <!-- Upload panel -->
+      <div id="panel-upload" role="tabpanel" aria-labelledby="tab-upload">
+        <div
+          id="drop-zone"
+          class="drop-zone"
+          tabindex="0"
+          role="button"
+          aria-label="Drop CSV file here or click to browse"
+          aria-describedby="drop-zone-hint"
+        >
+          <div class="drop-zone-icon" aria-hidden="true">📂</div>
+          <p class="drop-zone-text">Drag &amp; drop your CSV here</p>
+          <p class="drop-zone-subtext" id="drop-zone-hint">or click to browse (max 5 MB)</p>
+          <input
+            type="file"
+            id="file-input"
+            accept=".csv,text/csv"
+            class="visually-hidden"
+            aria-label="Choose CSV file"
+          />
+        </div>
+        <p id="file-name-display" class="file-name-display" aria-live="polite"></p>
+      </div>
+
+      <!-- Paste panel -->
+      <div id="panel-paste" role="tabpanel" aria-labelledby="tab-paste" class="hidden">
+        <label for="csv-paste-area" class="visually-hidden">Paste CSV data here</label>
+        <textarea
+          id="csv-paste-area"
+          class="csv-textarea"
+          placeholder="Paste your CSV data here...&#10;&#10;Example:&#10;id,name,email,age&#10;1,Alice,alice@example.com,25&#10;2,Bob,,twenty"
+          rows="10"
+          aria-label="Paste CSV data"
+          spellcheck="false"
+        ></textarea>
+      </div>
+
+      <!-- Analyze button -->
+      <div class="input-actions">
+        <button
+          id="analyze-btn"
+          class="btn btn-primary btn-lg"
+          aria-label="Analyze CSV for data quality issues"
+        >
+          <span class="btn-text">🔍 Analyze Dataset</span>
+          <span class="spinner hidden" aria-hidden="true"></span>
+        </button>
+      </div>
+    </section>
+
+    <!-- ===== SECTION 2: ANALYSIS RESULTS ===== -->
+    <section class="card hidden" id="results-section" aria-labelledby="results-heading" aria-live="polite">
+      <h2 id="results-heading" class="card-title">
+        <span class="step-badge" aria-hidden="true">2</span>
+        Dataset Diagnosis
+      </h2>
+
+      <!-- Summary banner -->
+      <div id="summary-banner" class="summary-banner" role="status"></div>
+
+      <!-- Profile stats -->
+      <div class="results-grid">
+        <div class="stat-card" id="stat-rows">
+          <div class="stat-value" id="stat-rows-val">—</div>
+          <div class="stat-label">Rows</div>
+        </div>
+        <div class="stat-card" id="stat-cols">
+          <div class="stat-value" id="stat-cols-val">—</div>
+          <div class="stat-label">Columns</div>
+        </div>
+        <div class="stat-card" id="stat-dupes">
+          <div class="stat-value" id="stat-dupes-val">—</div>
+          <div class="stat-label">Duplicate Rows</div>
+        </div>
+        <div class="stat-card" id="stat-issues">
+          <div class="stat-value" id="stat-issues-val">—</div>
+          <div class="stat-label">Issues Found</div>
+        </div>
+      </div>
+
+      <!-- Column profile table -->
+      <details class="collapsible" id="profile-details">
+        <summary class="collapsible-summary">
+          <span>Column Profile</span>
+          <span class="chevron" aria-hidden="true">▼</span>
+        </summary>
+        <div class="table-wrapper" role="region" aria-label="Column profile table">
+          <table id="profile-table" class="data-table">
+            <thead>
+              <tr>
+                <th scope="col">Column</th>
+                <th scope="col">Type</th>
+                <th scope="col">Nulls</th>
+                <th scope="col">Null %</th>
+                <th scope="col">Unique</th>
+                <th scope="col">Sample Values</th>
+              </tr>
+            </thead>
+            <tbody id="profile-table-body"></tbody>
+          </table>
+        </div>
+      </details>
+
+      <!-- Issues list -->
+      <div id="issues-container" aria-label="Data quality issues">
+        <h3 class="section-subtitle">Issues Found</h3>
+        <div id="issues-list" class="issues-list"></div>
+      </div>
+    </section>
+
+    <!-- ===== SECTION 3: CODE ===== -->
+    <section class="card hidden" id="code-section" aria-labelledby="code-heading">
+      <h2 id="code-heading" class="card-title">
+        <span class="step-badge" aria-hidden="true">3</span>
+        Cleaning Code
+      </h2>
+
+      <p class="section-hint">
+        The code below was generated to fix the issues above. You can edit it before running.
+      </p>
+
+      <div class="code-toolbar">
+        <button id="copy-code-btn" class="btn btn-ghost btn-sm" aria-label="Copy code to clipboard">
+          📋 Copy
+        </button>
+      </div>
+
+      <pre
+        id="code-block"
+        class="code-block"
+        contenteditable="true"
+        role="textbox"
+        aria-multiline="true"
+        aria-label="Editable Python cleaning code"
+        spellcheck="false"
+      ></pre>
+
+      <div class="code-actions">
+        <button
+          id="run-code-btn"
+          class="btn btn-success"
+          aria-label="Run the cleaning code"
+        >
+          <span class="btn-text">▶ Run Code</span>
+          <span class="spinner hidden" aria-hidden="true"></span>
+        </button>
+        <a
+          id="download-btn"
+          class="btn btn-outline hidden"
+          aria-label="Download cleaned CSV file"
+          role="button"
+        >
+          ⬇ Download Cleaned CSV
+        </a>
+      </div>
+
+      <!-- Execution result -->
+      <div id="run-result" class="run-result hidden" role="status" aria-live="polite">
+        <div id="run-result-icon" class="run-result-icon" aria-hidden="true"></div>
+        <div id="run-result-message" class="run-result-message"></div>
+        <pre id="run-result-stdout" class="run-result-stdout hidden"></pre>
+      </div>
+    </section>
+
+    <!-- ===== SECTION 4: CHAT ===== -->
+    <section class="card hidden" id="chat-section" aria-labelledby="chat-heading">
+      <h2 id="chat-heading" class="card-title">
+        <span class="step-badge" aria-hidden="true">4</span>
+        Ask Follow-up Questions
+      </h2>
+
+      <p class="section-hint">
+        Ask anything about your dataset, the issues found, or the cleaning code.
+        <br />
+        <em>Examples: "Why should I convert this column to datetime?" · "Make this code simpler." · "What does fillna do?"</em>
+      </p>
+
+      <div
+        id="chat-thread"
+        class="chat-thread"
+        role="log"
+        aria-label="Conversation thread"
+        aria-live="polite"
+      ></div>
+
+      <div class="chat-input-row">
+        <label for="chat-input" class="visually-hidden">Type your question</label>
+        <textarea
+          id="chat-input"
+          class="chat-input"
+          placeholder="Ask a question about your data..."
+          rows="2"
+          aria-label="Chat input"
+        ></textarea>
+        <button
+          id="chat-send-btn"
+          class="btn btn-primary"
+          aria-label="Send message"
+        >
+          <span class="btn-text">Send</span>
+          <span class="spinner hidden" aria-hidden="true"></span>
+        </button>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="site-footer" role="contentinfo">
+    <p>CSV Doctor · Built with Flask + OpenAI · For data engineering students</p>
+  </footer>
+
+  <script src="/static/js/app.js"></script>
+</body>
+</html>

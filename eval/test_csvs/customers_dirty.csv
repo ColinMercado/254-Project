@@ -1,0 +1,13 @@
+customer_id,name,email,signup_date,age,total_spent
+1001,Alice Johnson,alice@example.com,2023-01-15,28,450.00
+1002,Bob Smith,,01/22/2023,thirty-two,120.50
+1003,Carol White,carol@example.com,2023-03-10,25,890.00
+1001,Alice Johnson,alice@example.com,2023-01-15,28,450.00
+1004,,dave@example.com,04/05/2023,forty,200.00
+1005,Eve Davis,eve@example.com,2023-05-20,31,675.25
+1006,Frank Lee,,2023/06/15,29,310.00
+1007,Grace Kim,grace@example.com,07-10-2023,twenty-six,540.00
+1002,Bob Smith,,01/22/2023,thirty-two,120.50
+1008,Henry Brown,henry@example.com,2023-08-01,35,980.75
+1009,,iris@example.com,09/12/2023,27,150.00
+1010,Jack Wilson,jack@example.com,2023-10-30,forty-five,420.00

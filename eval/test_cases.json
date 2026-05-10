@@ -1,0 +1,171 @@
+[
+  {
+    "id": "TC01",
+    "csv_file": "eval/test_csvs/customers_dirty.csv",
+    "description": "Customer dataset with duplicate IDs, missing emails, inconsistent date formats, ages stored as text, and blank names",
+    "expected_issues": [
+      "duplicate",
+      "missing",
+      "email",
+      "date",
+      "age"
+    ],
+    "expected_cleaning_steps": [
+      "drop_duplicates",
+      "fillna",
+      "to_datetime",
+      "to_numeric"
+    ]
+  },
+  {
+    "id": "TC02",
+    "csv_file": "eval/test_csvs/orders_dirty.csv",
+    "description": "Orders dataset with negative quantities, missing product names, dollar-sign prices, duplicate order IDs, and invalid dates",
+    "expected_issues": [
+      "negative",
+      "missing",
+      "price",
+      "duplicate",
+      "date"
+    ],
+    "expected_cleaning_steps": [
+      "drop_duplicates",
+      "replace",
+      "to_numeric",
+      "to_datetime"
+    ]
+  },
+  {
+    "id": "TC03",
+    "csv_file": "eval/test_csvs/employees_dirty.csv",
+    "description": "Employee dataset with mixed salary formats (commas), missing department, duplicate IDs, inconsistent phone formatting",
+    "expected_issues": [
+      "duplicate",
+      "missing",
+      "salary",
+      "phone"
+    ],
+    "expected_cleaning_steps": [
+      "drop_duplicates",
+      "replace",
+      "to_numeric",
+      "fillna"
+    ]
+  },
+  {
+    "id": "TC04",
+    "csv_file": "eval/test_csvs/products_dirty.csv",
+    "description": "Products dataset with negative prices, missing category, duplicate SKUs, weight stored as string with units",
+    "expected_issues": [
+      "negative",
+      "missing",
+      "duplicate",
+      "weight"
+    ],
+    "expected_cleaning_steps": [
+      "drop_duplicates",
+      "fillna",
+      "str.replace",
+      "to_numeric"
+    ]
+  },
+  {
+    "id": "TC05",
+    "csv_file": "eval/test_csvs/transactions_dirty.csv",
+    "description": "Transactions dataset with future dates, missing amounts, duplicate transaction IDs, currency mixed with numbers",
+    "expected_issues": [
+      "future",
+      "missing",
+      "duplicate",
+      "currency"
+    ],
+    "expected_cleaning_steps": [
+      "drop_duplicates",
+      "to_datetime",
+      "to_numeric",
+      "fillna"
+    ]
+  },
+  {
+    "id": "TC06",
+    "csv_file": "eval/test_csvs/students_dirty.csv",
+    "description": "Students dataset with GPA > 4.0, missing major, inconsistent grade formats, duplicate entries",
+    "expected_issues": [
+      "gpa",
+      "missing",
+      "duplicate",
+      "grade"
+    ],
+    "expected_cleaning_steps": [
+      "drop_duplicates",
+      "fillna",
+      "to_numeric"
+    ]
+  },
+  {
+    "id": "TC07",
+    "csv_file": "eval/test_csvs/inventory_dirty.csv",
+    "description": "Inventory dataset with negative stock counts, missing supplier, inconsistent unit types, duplicate item codes",
+    "expected_issues": [
+      "negative",
+      "missing",
+      "duplicate",
+      "unit"
+    ],
+    "expected_cleaning_steps": [
+      "drop_duplicates",
+      "fillna",
+      "to_numeric"
+    ]
+  },
+  {
+    "id": "TC08",
+    "csv_file": "eval/test_csvs/sales_dirty.csv",
+    "description": "Sales dataset with missing region, revenue stored as text with currency symbols, duplicate sale IDs, mixed date formats",
+    "expected_issues": [
+      "missing",
+      "revenue",
+      "duplicate",
+      "date"
+    ],
+    "expected_cleaning_steps": [
+      "drop_duplicates",
+      "fillna",
+      "str.replace",
+      "to_numeric",
+      "to_datetime"
+    ]
+  },
+  {
+    "id": "TC09",
+    "csv_file": "eval/test_csvs/users_dirty.csv",
+    "description": "Users dataset with invalid email formats, missing usernames, duplicate user IDs, age outliers (999, -1, 150)",
+    "expected_issues": [
+      "email",
+      "missing",
+      "duplicate",
+      "age"
+    ],
+    "expected_cleaning_steps": [
+      "drop_duplicates",
+      "fillna",
+      "to_numeric"
+    ]
+  },
+  {
+    "id": "TC10",
+    "csv_file": "eval/test_csvs/logs_dirty.csv",
+    "description": "Logs dataset with malformed timestamps, missing severity levels, duplicate log IDs, encoding artifacts in messages",
+    "expected_issues": [
+      "timestamp",
+      "missing",
+      "duplicate",
+      "severity"
+    ],
+    "expected_cleaning_steps": [
+      "drop_duplicates",
+      "fillna",
+      "to_datetime"
+    ]
+  }
+]

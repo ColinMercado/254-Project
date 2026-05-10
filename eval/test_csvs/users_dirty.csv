@@ -1,0 +1,13 @@
+user_id,username,email,age,created_at,status
+U001,alice_j,alice@example.com,28,2023-01-15,active
+U002,,bob.smith,999,2023-02-20,active
+U003,carol_w,carol@example.com,25,2023-03-10,inactive
+U001,alice_j,alice@example.com,28,2023-01-15,active
+U004,dave_m,dave@example,−5,2023-04-05,active
+U005,eve_d,eve@example.com,31,2023-05-20,
+U006,frank_l,not-an-email,29,2023-06-15,active
+U007,,grace@example.com,150,2023-07-10,active
+U002,,bob.smith,999,2023-02-20,active
+U008,henry_b,henry@example.com,35,2023-08-01,active
+U009,iris_k,iris@example.com,27,2023-09-12,inactive
+U010,jack_w,jack@example.com,-1,2023-10-30,active
