@@ -11,7 +11,6 @@
   <header class="site-header" role="banner">
     <div class="header-inner">
       <div class="logo">
-        <span class="logo-icon" aria-hidden="true">🩺</span>
         <span class="logo-text">CSV Doctor</span>
       </div>
       <p class="tagline">AI-powered data quality diagnosis for your CSV files</p>
@@ -97,7 +96,7 @@
           class="btn btn-primary btn-lg"
           aria-label="Analyze CSV for data quality issues"
         >
-          <span class="btn-text">🔍 Analyze Dataset</span>
+          <span class="btn-text">Analyze Dataset</span>
           <span class="spinner hidden" aria-hidden="true"></span>
         </button>
       </div>
@@ -215,6 +214,21 @@
         <div id="run-result-message" class="run-result-message"></div>
         <pre id="run-result-stdout" class="run-result-stdout hidden"></pre>
       </div>
+
+      <!-- Analyze Again — re-analyze the cleaned CSV without re-uploading -->
+      <div id="analyze-again-container" class="hidden" style="margin-top:1rem;">
+        <button
+          id="analyze-again-btn"
+          class="btn btn-primary"
+          aria-label="Re-analyze the cleaned dataset"
+        >
+          <span class="btn-text">Analyze Again</span>
+          <span class="spinner hidden" aria-hidden="true"></span>
+        </button>
+        <p class="section-hint" style="margin-top:0.5rem;margin-bottom:0;">
+          Runs a fresh diagnosis on the newly cleaned dataset.
+        </p>
+      </div>
     </section>
 
     <!-- ===== SECTION 4: CHAT ===== -->
@@ -229,14 +243,6 @@
         <br />
         <em>Examples: "Why should I convert this column to datetime?" · "Make this code simpler." · "What does fillna do?"</em>
       </p>
-
-      <div
-        id="chat-thread"
-        class="chat-thread"
-        role="log"
-        aria-label="Conversation thread"
-        aria-live="polite"
-      ></div>
 
       <div class="chat-input-row">
         <label for="chat-input" class="visually-hidden">Type your question</label>
@@ -256,12 +262,20 @@
           <span class="spinner hidden" aria-hidden="true"></span>
         </button>
       </div>
+
+      <div
+        id="chat-thread"
+        class="chat-thread"
+        role="log"
+        aria-label="Conversation thread"
+        aria-live="polite"
+      ></div>
     </section>
 
   </main>
 
   <footer class="site-footer" role="contentinfo">
-    <p>CSV Doctor · Built with Flask + OpenAI · For data engineering students</p>
+    <p>CSV Doctor · Built with Flask + OpenAI · Made for Data Engineering students</p>
   </footer>
 
   <script src="/static/js/app.js"></script>

@@ -1,4 +1,4 @@
-# 🩺 CSV Doctor
+# CSV Doctor
 
 **AI-powered data quality diagnosis for messy CSV files.**
 
@@ -14,7 +14,8 @@ Built for data engineering students who want to understand *what's wrong* with a
 2. **Diagnose** — Uses GPT-4o-mini + a local data engineering rulebook to identify issues
 3. **Prescribe** — Generates complete, runnable Pandas cleaning code
 4. **Validate** — Executes the code in a sandbox and lets you download the cleaned CSV
-5. **Explain** — Follow-up chat so you can ask "why?" or "make this simpler"
+5. **Loop** — Click **Analyze Again** after a successful run to re-diagnose the cleaned dataset without re-uploading, repeating the cycle until the data is clean
+6. **Explain** — Follow-up chat so you can ask "why?" or "make this simpler"
 
 ---
 
@@ -77,13 +78,15 @@ You should see the CSV Doctor interface. Upload a CSV file or paste CSV text, th
 
 ## Example Invocations
 
-**Upload a file:**
+**Upload a file and run the cleaning loop:**
 1. Click "Upload File" tab
 2. Drag `eval/test_csvs/customers_dirty.csv` onto the drop zone (or click to browse)
-3. Click **🔍 Analyze Dataset**
+3. Click **Analyze Dataset**
 4. Review the issues panel — you should see: duplicate IDs, missing emails, inconsistent date formats, age stored as text
-5. Click **▶ Run Code** to execute the generated cleaning code
-6. Click **⬇ Download Cleaned CSV** to save the result
+5. Click **Run Code** to execute the generated cleaning code
+6. On success, click **Analyze Again** to re-diagnose the cleaned dataset — no re-uploading needed
+7. Repeat steps 5–6 until the diagnosis shows no remaining issues
+8. Click **Download Cleaned CSV** at any point to save the current cleaned version
 
 **Paste CSV:**
 1. Click "Paste CSV" tab
@@ -94,7 +97,7 @@ You should see the CSV Doctor interface. Upload a CSV file or paste CSV text, th
    2,Bob,,thirty
    1,Alice,alice@example.com,25
    ```
-3. Click **🔍 Analyze Dataset**
+3. Click **Analyze Dataset**
 
 **Follow-up chat:**
 After analysis, scroll to the chat section and ask:

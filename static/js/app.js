@@ -58,6 +58,8 @@ const dom = {
   runResultIcon: $('run-result-icon'),
   runResultMessage: $('run-result-message'),
   runResultStdout: $('run-result-stdout'),
+  analyzeAgainContainer: $('analyze-again-container'),
+  analyzeAgainBtn: $('analyze-again-btn'),
 
   // Chat
   chatSection: $('chat-section'),
@@ -278,6 +280,7 @@ function renderResults(data) {
   // Reset run result
   dom.runResult.classList.add('hidden');
   dom.downloadBtn.classList.add('hidden');
+  dom.analyzeAgainContainer.classList.add('hidden');
 
   // Scroll to results
   dom.resultsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -382,6 +385,7 @@ async function handleRunCode() {
     if (data.success && data.has_cleaned_csv) {
       dom.downloadBtn.href = `/api/download/${state.sessionId}`;
       dom.downloadBtn.classList.remove('hidden');
+      dom.analyzeAgainContainer.classList.remove('hidden');
     }
 
   } catch (err) {
@@ -411,6 +415,64 @@ function showRunResult(success, errorMsg, stdout) {
   }
 
   dom.runResult.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+// ---------------------------------------------------------------------------
+// Analyze Again — re-analyze the cleaned CSV
+// ---------------------------------------------------------------------------
+
+dom.analyzeAgainBtn.addEventListener('click', handleAnalyzeAgain);
+
+async function handleAnalyzeAgain() {
+  if (!state.sessionId) {
+    showAlert('No cleaned dataset available. Run the cleaning code first.');
+    return;
+  }
+
+  setLoading(dom.analyzeAgainBtn, true);
+  hideAlert();
+
+  try {
+    // Fetch the cleaned CSV from the server
+    const csvRes = await fetch(`/api/download/${state.sessionId}`);
+    if (!csvRes.ok) {
+      showAlert('Could not retrieve the cleaned CSV. Run the code first.');
+      return;
+    }
+    const cleanedCsvText = await csvRes.text();
+
+    // Re-run analysis on the cleaned CSV
+    const res = await fetch('/api/analyze', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ csv_text: cleanedCsvText }),
+    });
+    const data = await res.json();
+
+    if (!res.ok) {
+      showAlert(data.error || 'Re-analysis failed. Please try again.');
+      return;
+    }
+
+    // Update state with the new session
+    state.sessionId = data.session_id;
+    state.profile = data.profile;
+    state.csvText = cleanedCsvText;
+    state.chatHistory = [];
+
+    // Hide the Analyze Again button and download button until next run
+    dom.analyzeAgainContainer.classList.add('hidden');
+    dom.downloadBtn.classList.add('hidden');
+
+    // Render fresh results
+    renderResults(data);
+
+  } catch (err) {
+    showAlert('Network error. Is the server running?');
+    console.error(err);
+  } finally {
+    setLoading(dom.analyzeAgainBtn, false);
+  }
 }
 
 // ---------------------------------------------------------------------------

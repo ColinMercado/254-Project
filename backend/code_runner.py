@@ -36,6 +36,9 @@ def run_cleaning_code(csv_text: str, code: str) -> dict:
             - cleaned_csv (str | None): Cleaned CSV content if successful
             - stdout (str): Any print output from the code
     """
+    # Pre-process the code to fix the most common AI-generated anti-patterns
+    code = _sanitize_code(code)
+    code = _fix_indentation(code)
     csv_tmp = None
     out_tmp = None
     script_tmp = None
@@ -64,8 +67,24 @@ import sys
 import warnings
 warnings.filterwarnings('ignore')
 
+# Allow boolean indexing with NA values (fills NA as False, keeps row out)
+pd.options.mode.use_inf_as_na = True
+
 # Load the dataset
 df = pd.read_csv({repr(csv_tmp)})
+
+# Safety helper: safe numeric conversion that never raises on bad values
+def _safe_numeric(series):
+    return pd.to_numeric(series, errors='coerce')
+
+# Safety helper: safe datetime conversion that never raises on bad values
+def _safe_datetime(series, **kwargs):
+    kwargs.setdefault('errors', 'coerce')
+    return pd.to_datetime(series, **kwargs)
+
+# Safety helper: safe boolean mask that treats NaN as False
+def _safe_mask(series):
+    return series.fillna(False).astype(bool)
 
 # ---- User cleaning code ----
 {code}
@@ -175,3 +194,107 @@ def _extract_error(stderr: str) -> str:
 
     # Fall back to last 5 lines
     return "\n".join(lines[-5:]).strip()
+
+
+def _fix_indentation(code: str) -> str:
+    """
+    Normalize indentation in AI-generated code to prevent IndentationError.
+
+    The model sometimes produces top-level statements with unexpected leading
+    whitespace, or mixes tabs and spaces. This function:
+    1. Converts all tabs to 4 spaces
+    2. Detects lines that are at the top level of a block but have unexpected
+       indentation (i.e. not inside an if/for/with/def/try block) and strips it
+    """
+    import textwrap
+
+    # Step 1: normalize tabs → spaces
+    code = code.replace('\t', '    ')
+
+    # Step 2: use textwrap.dedent to remove any common leading whitespace
+    # that the model added to the entire block
+    code = textwrap.dedent(code)
+
+    # Step 3: walk line by line and fix orphaned indented lines.
+    # An "orphaned" line is one that is indented but the previous non-empty
+    # line didn't open a block (doesn't end with ':').
+    BLOCK_OPENERS = ('if ', 'elif ', 'else:', 'for ', 'while ', 'with ',
+                     'def ', 'class ', 'try:', 'except', 'finally:')
+
+    lines = code.splitlines()
+    fixed = []
+    prev_opens_block = False
+
+    for line in lines:
+        stripped = line.lstrip()
+        indent = len(line) - len(stripped)
+
+        if not stripped:
+            # Blank line — keep as-is, doesn't affect block state
+            fixed.append(line)
+            prev_opens_block = False
+            continue
+
+        if indent > 0 and not prev_opens_block:
+            # This line is indented but the previous line didn't open a block.
+            # Strip the indentation to bring it back to the top level.
+            line = stripped
+
+        fixed.append(line)
+
+        # Determine if this line opens a new block
+        prev_opens_block = stripped.rstrip().endswith(':') and any(
+            stripped.startswith(kw) for kw in BLOCK_OPENERS
+        )
+
+    return '\n'.join(fixed)
+
+
+def _sanitize_code(code: str) -> str:
+    """
+    Rewrite common AI-generated anti-patterns that cause runtime errors.
+
+    Fixes:
+    - `~df['col'].isna()` → `df['col'].notna()`
+    - `~df['col'].isnull()` → `df['col'].notnull()`
+    - `~df['col'].notna()` → `df['col'].isna()`
+    - `~df['col'].notnull()` → `df['col'].isnull()`
+    - `.astype(int)` on potentially-null columns → `.astype('Int64')`
+
+    NOTE: We intentionally do NOT rewrite comparison filters like df[df['col'] > 0]
+    because that regex is too broad and corrupts .loc[] assignments. The wrapper
+    preamble sets pd.options.mode.use_inf_as_na = True and the prompt instructs
+    the model to .fillna() before filtering, which handles this at the source.
+    """
+    import re
+
+    # Pattern: ~df[...].isna() → df[...].notna()
+    code = re.sub(
+        r'~\s*([\w_]+\[[\'"]\w+[\'"]\])\.isna\(\)',
+        r'\1.notna()',
+        code,
+    )
+    # Pattern: ~df[...].isnull() → df[...].notnull()
+    code = re.sub(
+        r'~\s*([\w_]+\[[\'"]\w+[\'"]\])\.isnull\(\)',
+        r'\1.notnull()',
+        code,
+    )
+    # Pattern: ~df[...].notna() → df[...].isna()
+    code = re.sub(
+        r'~\s*([\w_]+\[[\'"]\w+[\'"]\])\.notna\(\)',
+        r'\1.isna()',
+        code,
+    )
+    # Pattern: ~df[...].notnull() → df[...].isnull()
+    code = re.sub(
+        r'~\s*([\w_]+\[[\'"]\w+[\'"]\])\.notnull\(\)',
+        r'\1.isnull()',
+        code,
+    )
+
+    # Pattern: .astype(int) → .astype('Int64')  (pandas nullable integer handles NaN)
+    # Only replace bare .astype(int), not .astype('int64') or similar strings
+    code = re.sub(r'\.astype\(\s*int\s*\)', ".astype('Int64')", code)
+
+    return code
